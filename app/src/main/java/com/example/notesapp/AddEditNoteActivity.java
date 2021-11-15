@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,10 +13,9 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import javax.crypto.spec.DESedeKeySpec;
+public class AddEditNoteActivity extends AppCompatActivity {
 
-public class AddNoteActivity extends AppCompatActivity {
-
+    public static final String EXTRA_ID = "com.example.notesapp.EXTRA_ID";
     public static final String EXTRA_TITLE = "com.example.notesapp.EXTRA_TITLE";
     public static final String EXTRA_DESCRIPTION = "com.example.notesapp.EXTRA_DESCRIPTION";
     public static final String EXTRA_PRIORITY = "com.example.notesapp.EXTRA_PRIORITY";
@@ -43,7 +41,17 @@ public class AddNoteActivity extends AppCompatActivity {
 
         // Set close icon on Action bar instead Up indicator (Add note activity)
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
-        setTitle("Add note");
+
+        // Get intent for edit functionality
+        Intent editIntent = getIntent();
+        if (editIntent.hasExtra(EXTRA_ID)) {
+            setTitle("Edit Note");
+            titleTextView.setText(editIntent.getStringExtra(EXTRA_TITLE));
+            descriptionTextView.setText(editIntent.getStringExtra(EXTRA_DESCRIPTION));
+            priorityNumberPicker.setValue(editIntent.getIntExtra(EXTRA_PRIORITY, 1));
+        } else {
+            setTitle("Add Note");
+        }
 
     }
 
@@ -59,12 +67,18 @@ public class AddNoteActivity extends AppCompatActivity {
             Toast.makeText(this, "Please enter title and description", Toast.LENGTH_SHORT).show();
         } else {
 
-            // Crate intent and stored values
+            // Create intent and stored values
             // Intent will be received in main activity with all stored values
             Intent intent = new Intent();
             intent.putExtra(EXTRA_TITLE, title);
             intent.putExtra(EXTRA_DESCRIPTION, description);
             intent.putExtra(EXTRA_PRIORITY, priority);
+            int id = getIntent().getIntExtra(EXTRA_ID, -1);
+
+            // Check if contains id so it can be sent to main activity
+            if (id != -1){
+                intent.putExtra(EXTRA_ID, id);
+            }
             setResult(RESULT_CODE, intent);
             finish();
         }
@@ -75,7 +89,7 @@ public class AddNoteActivity extends AppCompatActivity {
 
         // Inflate menu that is created
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
+        inflater.inflate(R.menu.add_activity_menu, menu);
         return true;
     }
 

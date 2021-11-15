@@ -18,6 +18,7 @@ import java.util.List;
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteHolder> {
 
     private List<Note> notes = new ArrayList<>();
+    private OnItemClickListener listener;
 
     @NonNull
     @Override
@@ -61,7 +62,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteHolder> {
     }
 
     // A ViewHolder describes an item view and metadata
-// about its place within the RecyclerView.
+    // about its place within the RecyclerView.
     class NoteHolder extends RecyclerView.ViewHolder {
 
         private TextView titleTextView;
@@ -73,6 +74,27 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteHolder> {
             titleTextView = itemView.findViewById(R.id.text_view_title);
             descriptionTextView = itemView.findViewById(R.id.text_view_description);
             priorityTextView = itemView.findViewById(R.id.text_view_priority);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (listener != null && position != RecyclerView.NO_POSITION) {
+                        listener.onItemClick(notes.get(position));
+                    }
+                }
+            });
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Note note);
+    }
+    // Method that will be called on Main Activity
+    // Which will pass onItemClickListener to RecyclerView class and save it to global variable
+    // then the ViewHolder class in the RecyclerView will call onClick method defined in the interface,
+    // which will pass the Note which is clicked to the onClick implementation in the Main Activity class
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }

@@ -17,11 +17,16 @@ public class NoteRepository {
         noteDao = database.noteDao();
         allNotes = noteDao.getAllNotes();
     }
+
     // Because main activity uses repo method to get data,
     // they are needed to be implemented in repo class
     public void insert(Note note) {
         InsertNoteAsyncTask insertNoteAsyncTask = new InsertNoteAsyncTask(noteDao);
         insertNoteAsyncTask.execute(note);
+    }
+
+    public void update(Note note) {
+        new UpdateNoteAsyncTask(noteDao).execute(note);
     }
 
     public void delete(Note note) {
@@ -52,6 +57,21 @@ public class NoteRepository {
         @Override
         protected Void doInBackground(Note... notes) {
             noteDao.insert(notes[0]);
+            return null;
+        }
+    }
+
+    private static class UpdateNoteAsyncTask extends AsyncTask<Note, Void, Void> {
+
+        private NoteDao noteDao;
+
+        public UpdateNoteAsyncTask(NoteDao noteDao) {
+            this.noteDao = noteDao;
+        }
+
+        @Override
+        protected Void doInBackground(Note... notes) {
+            noteDao.update(notes[0]);
             return null;
         }
     }
